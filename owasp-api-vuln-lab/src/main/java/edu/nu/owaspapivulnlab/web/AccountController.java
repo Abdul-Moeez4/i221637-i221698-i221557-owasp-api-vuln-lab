@@ -24,20 +24,42 @@ public class AccountController {
         this.users = users;
     }
 
-    // VULNERABILITY(API1: BOLA) - no check whether account belongs to caller
+    // FIXED: Added ownership validation (Q3 fix)
     @GetMapping("/{id}/balance")
-    public Double balance(@PathVariable Long id) {
-        Account a = accounts.findById(id).orElseThrow(() -> new RuntimeException("Account not found"));
-        return a.getBalance();
+    public ResponseEntity<Double> balance(@PathVariable("id") Long id, Authentication auth) {
+        if (auth == null || auth.getName() == null)
+            return ResponseEntity.status(401).build(); // not logged in
+
+        Account a = accounts.findById(id)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+        AppUser me = users.findByUsername(auth.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // ownership check
+        if (!a.getOwnerUserId().equals(me.getId()))
+            return ResponseEntity.status(403).build(); // forbidden
+
+        return ResponseEntity.ok(a.getBalance());
     }
 
-    // VULNERABILITY(API4: Unrestricted Resource Consumption) - no rate limiting on transfer
-    // VULNERABILITY(API5/1): no authorization check on owner
+    // FIXED: Added ownership validation (Q3 fix)
     @PostMapping("/{id}/transfer")
-    public ResponseEntity<?> transfer(@PathVariable Long id, @RequestParam Double amount) {
-        Account a = accounts.findById(id).orElseThrow(() -> new RuntimeException("Account not found"));
+    public ResponseEntity<?> transfer(@PathVariable Long id, @RequestParam Double amount, Authentication auth) {
+        if (auth == null || auth.getName() == null)
+            return ResponseEntity.status(401).build();
+
+        Account a = accounts.findById(id)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+        AppUser me = users.findByUsername(auth.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // only owner can transfer
+        if (!a.getOwnerUserId().equals(me.getId()))
+            return ResponseEntity.status(403).build();
+
         a.setBalance(a.getBalance() - amount);
         accounts.save(a);
+
         Map<String, Object> response = new HashMap<>();
         response.put("status", "ok");
         response.put("remaining", a.getBalance());

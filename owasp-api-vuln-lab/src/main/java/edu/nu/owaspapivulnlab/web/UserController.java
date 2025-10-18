@@ -3,52 +3,64 @@ package edu.nu.owaspapivulnlab.web;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import edu.nu.owaspapivulnlab.model.AppUser;
 import edu.nu.owaspapivulnlab.repo.AppUserRepository;
+import edu.nu.owaspapivulnlab.dto.UserDTO;  //  added import
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;          //  added import
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
+
     private final AppUserRepository users;
 
     public UserController(AppUserRepository users) {
         this.users = users;
     }
 
-    // VULNERABILITY(API1: BOLA/IDOR) - no ownership check, any authenticated OR anonymous GET (due to SecurityConfig) can fetch any user
+    //  Return DTO instead of entity (hide password, role, isAdmin)
     @GetMapping("/{id}")
-    public AppUser get(@PathVariable Long id) {
-        return users.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+    public UserDTO get(@PathVariable Long id) {
+        AppUser user = users.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return UserDTO.from(user);
     }
 
-    // VULNERABILITY(API6: Mass Assignment) - binds role/isAdmin from client
+    // (still vulnerable to Mass Assignment - will be fixed in Q6)
     @PostMapping
     public AppUser create(@Valid @RequestBody AppUser body) {
         return users.save(body);
     }
 
-    // VULNERABILITY(API9: Improper Inventory + API8 Injection style): naive 'search' that can be abused for enumeration
-    @GetMapping("/search")
-    public List<AppUser> search(@RequestParam String q) {
-        return users.search(q);
-    }
-
-    // VULNERABILITY(API3: Excessive Data Exposure) - returns all users including sensitive fields
+    // Return list of safe DTOs instead of full user data
     @GetMapping
-    public List<AppUser> list() {
-        return users.findAll();
+    public List<UserDTO> list() {
+        return users.findAll()
+                .stream()
+                .map(UserDTO::from)
+                .collect(Collectors.toList());
     }
 
-    // VULNERABILITY(API5: Broken Function Level Authorization) - allows regular users to delete anyone
+    // (you can leave this delete as-is for now; Q5/Q6 handle roles)
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         users.deleteById(id);
         Map<String, String> response = new HashMap<>();
         response.put("status", "deleted");
         return ResponseEntity.ok(response);
+    }
+
+    // (optional) search endpoint — still returns DTOs safely
+    @GetMapping("/search")
+    public List<UserDTO> search(@RequestParam String q) {
+        return users.search(q)
+                .stream()
+                .map(UserDTO::from)
+                .collect(Collectors.toList());
     }
 }
