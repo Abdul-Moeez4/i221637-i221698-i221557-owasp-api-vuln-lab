@@ -7,7 +7,6 @@ edu\nu\owaspapivulnlab\web\AccountController.class
 edu\nu\owaspapivulnlab\repo\AccountRepository.class
 edu\nu\owaspapivulnlab\web\AuthController.class
 edu\nu\owaspapivulnlab\config\SecurityConfig.class
-edu\nu\owaspapivulnlab\web\GlobalErrorHandler.class
 edu\nu\owaspapivulnlab\repo\AppUserRepository.class
 edu\nu\owaspapivulnlab\config\SecurityConfig$JwtFilter.class
 edu\nu\owaspapivulnlab\model\Account$AccountBuilder.class

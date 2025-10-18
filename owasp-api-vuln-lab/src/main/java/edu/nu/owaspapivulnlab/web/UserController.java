@@ -6,21 +6,25 @@ import org.springframework.web.bind.annotation.*;
 
 import edu.nu.owaspapivulnlab.model.AppUser;
 import edu.nu.owaspapivulnlab.repo.AppUserRepository;
-import edu.nu.owaspapivulnlab.dto.UserDTO;  //  added import
+import edu.nu.owaspapivulnlab.dto.UserDTO;
+import edu.nu.owaspapivulnlab.dto.CreateUserRequest;  // Q6 FIX: Safe request DTO
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;          //  added import
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
     private final AppUserRepository users;
+    private final PasswordEncoder passwordEncoder;  // Q6 FIX: For secure password handling
 
-    public UserController(AppUserRepository users) {
+    public UserController(AppUserRepository users, PasswordEncoder passwordEncoder) {
         this.users = users;
+        this.passwordEncoder = passwordEncoder;
     }
 
     //  Return DTO instead of entity (hide password, role, isAdmin)
@@ -31,10 +35,34 @@ public class UserController {
         return UserDTO.from(user);
     }
 
-    // (still vulnerable to Mass Assignment - will be fixed in Q6)
+    /**
+     * Q6 FIX: Secure User Creation with Mass Assignment Prevention
+     * 
+     * OWASP API Security Top 10 - API6: Mass Assignment
+     * 
+     * Security Controls Implemented:
+     * 1. Uses CreateUserRequest DTO that excludes sensitive fields (role, isAdmin)
+     * 2. Server-side validation with @Valid annotation
+     * 3. Server controls all security-sensitive field assignments
+     * 4. Password hashing with BCrypt (Q1 fix)
+     * 5. Returns safe UserDTO without sensitive information (Q4 fix)
+     * 
+     * This prevents attackers from setting themselves as admin or assigning
+     * privileged roles by including extra fields in the request.
+     */
     @PostMapping
-    public AppUser create(@Valid @RequestBody AppUser body) {
-        return users.save(body);
+    public UserDTO create(@Valid @RequestBody CreateUserRequest request) {
+        // Q6 FIX: Server-side validation and secure field assignment
+        AppUser user = AppUser.builder()
+                .username(request.getUsername())
+                .password(passwordEncoder.encode(request.getPassword()))  // Q1 FIX: BCrypt hashing
+                .email(request.getEmail())
+                .role("USER")        // Q6 FIX: Server controls role - cannot be overridden by client
+                .isAdmin(false)      // Q6 FIX: Server controls admin status - secure default
+                .build();
+        
+        AppUser saved = users.save(user);
+        return UserDTO.from(saved);  // Q4 FIX: Return safe DTO without sensitive fields
     }
 
     // Return list of safe DTOs instead of full user data

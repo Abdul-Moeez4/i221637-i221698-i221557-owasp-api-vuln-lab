@@ -1,5 +1,8 @@
 C:\Users\cb26h\Desktop\SSD\i221637-i221698-i221557-owasp-api-vuln-lab\owasp-api-vuln-lab\src\main\java\edu\nu\owaspapivulnlab\config\DataSeeder.java
 C:\Users\cb26h\Desktop\SSD\i221637-i221698-i221557-owasp-api-vuln-lab\owasp-api-vuln-lab\src\main\java\edu\nu\owaspapivulnlab\config\SecurityConfig.java
+C:\Users\cb26h\Desktop\SSD\i221637-i221698-i221557-owasp-api-vuln-lab\owasp-api-vuln-lab\src\main\java\edu\nu\owaspapivulnlab\dto\CreateUserRequest.java
+C:\Users\cb26h\Desktop\SSD\i221637-i221698-i221557-owasp-api-vuln-lab\owasp-api-vuln-lab\src\main\java\edu\nu\owaspapivulnlab\dto\TransferRequest.java
+C:\Users\cb26h\Desktop\SSD\i221637-i221698-i221557-owasp-api-vuln-lab\owasp-api-vuln-lab\src\main\java\edu\nu\owaspapivulnlab\dto\UserDTO.java
 C:\Users\cb26h\Desktop\SSD\i221637-i221698-i221557-owasp-api-vuln-lab\owasp-api-vuln-lab\src\main\java\edu\nu\owaspapivulnlab\model\Account.java
 C:\Users\cb26h\Desktop\SSD\i221637-i221698-i221557-owasp-api-vuln-lab\owasp-api-vuln-lab\src\main\java\edu\nu\owaspapivulnlab\model\AppUser.java
 C:\Users\cb26h\Desktop\SSD\i221637-i221698-i221557-owasp-api-vuln-lab\owasp-api-vuln-lab\src\main\java\edu\nu\owaspapivulnlab\OwaspApiVulnLabApplication.java
@@ -9,5 +12,5 @@ C:\Users\cb26h\Desktop\SSD\i221637-i221698-i221557-owasp-api-vuln-lab\owasp-api-
 C:\Users\cb26h\Desktop\SSD\i221637-i221698-i221557-owasp-api-vuln-lab\owasp-api-vuln-lab\src\main\java\edu\nu\owaspapivulnlab\web\AccountController.java
 C:\Users\cb26h\Desktop\SSD\i221637-i221698-i221557-owasp-api-vuln-lab\owasp-api-vuln-lab\src\main\java\edu\nu\owaspapivulnlab\web\AdminController.java
 C:\Users\cb26h\Desktop\SSD\i221637-i221698-i221557-owasp-api-vuln-lab\owasp-api-vuln-lab\src\main\java\edu\nu\owaspapivulnlab\web\AuthController.java
-C:\Users\cb26h\Desktop\SSD\i221637-i221698-i221557-owasp-api-vuln-lab\owasp-api-vuln-lab\src\main\java\edu\nu\owaspapivulnlab\web\GlobalErrorHandler.java
+C:\Users\cb26h\Desktop\SSD\i221637-i221698-i221557-owasp-api-vuln-lab\owasp-api-vuln-lab\src\main\java\edu\nu\owaspapivulnlab\web\GlobalExceptionHandler.java
 C:\Users\cb26h\Desktop\SSD\i221637-i221698-i221557-owasp-api-vuln-lab\owasp-api-vuln-lab\src\main\java\edu\nu\owaspapivulnlab\web\UserController.java
