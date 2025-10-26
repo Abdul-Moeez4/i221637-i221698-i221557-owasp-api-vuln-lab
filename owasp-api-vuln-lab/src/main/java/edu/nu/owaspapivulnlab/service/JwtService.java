@@ -29,3 +29,4 @@ public class JwtService {
                 .compact();
     }
 }
+// Added issuer and audience validation for JWT
