@@ -23,6 +23,11 @@ import java.util.Collections;
 @Configuration
 public class SecurityConfig {
 
+   @Bean
+   public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+    }
+
     @Value("${app.jwt.secret}")
     private String secret;
 

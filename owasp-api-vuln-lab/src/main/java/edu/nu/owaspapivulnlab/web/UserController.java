@@ -1,4 +1,8 @@
 package edu.nu.owaspapivulnlab.web;
+import org.springframework.security.core.Authentication;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +18,8 @@ import java.util.Map;
 @RequestMapping("/api/users")
 public class UserController {
     private final AppUserRepository users;
+    @Autowired
+    private AppUserRepository userRepository;
 
     public UserController(AppUserRepository users) {
         this.users = users;
@@ -28,7 +34,9 @@ public class UserController {
     // VULNERABILITY(API6: Mass Assignment) - binds role/isAdmin from client
     @PostMapping
     public AppUser create(@Valid @RequestBody AppUser body) {
-        return users.save(body);
+	BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    body.setPassword(encoder.encode(body.getPassword()));       
+    return users.save(body);
     }
 
     // VULNERABILITY(API9: Improper Inventory + API8 Injection style): naive 'search' that can be abused for enumeration
@@ -51,7 +59,7 @@ public class UserController {
         response.put("status", "deleted");
         return ResponseEntity.ok(response);
     }
-}
+
 
 // Ownership Enforcement Added
 // Ensures users can only access their own data
@@ -61,9 +69,11 @@ public ResponseEntity<AppUser> getMyInfo(Authentication auth) {
     return ResponseEntity.ok(currentUser);
 }
 
+
 // DTO for incoming user registration (excludes sensitive fields)
 class AppUserRequestDTO {
     public String username;
     public String email;
     public String password;
+}
 }

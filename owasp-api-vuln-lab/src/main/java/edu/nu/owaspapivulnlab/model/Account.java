@@ -1,3 +1,4 @@
+
 package edu.nu.owaspapivulnlab.model;
 
 import jakarta.persistence.*;
