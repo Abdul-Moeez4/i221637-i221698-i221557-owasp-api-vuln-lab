@@ -33,9 +33,9 @@ public class SecurityConfig {
         http.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.authorizeHttpRequests(reg -> reg
-                .requestMatchers("/api/auth/**", "/h2-console/**").permitAll()
+                .requestMatchers("/api/auth/**", "/h2-console/**").authenticated()
                 // VULNERABILITY: broad permitAll on GET allows data scraping (API1/2 depending on context)
-                .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/**").hasRole("USER")
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
         );
@@ -73,3 +73,4 @@ public class SecurityConfig {
         }
     }
 }
+// Fixed Access Control: Removed permitAll and enforced authentication
