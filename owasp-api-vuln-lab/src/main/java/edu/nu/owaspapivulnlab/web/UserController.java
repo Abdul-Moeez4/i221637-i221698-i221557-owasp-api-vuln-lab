@@ -2,7 +2,8 @@ package edu.nu.owaspapivulnlab.web;
 import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.AccessDeniedException;
 
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -26,10 +27,23 @@ public class UserController {
     }
 
     // VULNERABILITY(API1: BOLA/IDOR) - no ownership check, any authenticated OR anonymous GET (due to SecurityConfig) can fetch any user
-    @GetMapping("/{id}")
-    public AppUser get(@PathVariable Long id) {
-        return users.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+@GetMapping("/{id}")
+public AppUser get(@PathVariable Long id) {
+    // Get currently authenticated user
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    String currentUsername = auth.getName();
+
+    AppUser currentUser = userRepository.findByEmail(currentUsername)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+    // Ownership validation: users can only access their own info
+    if (!currentUser.getId().equals(id)) {
+        throw new AccessDeniedException("You are not authorized to access this resource.");
     }
+
+    return users.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+}
+
 
     // VULNERABILITY(API6: Mass Assignment) - binds role/isAdmin from client
     @PostMapping
