@@ -52,3 +52,11 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 }
+
+// Ownership Enforcement Added
+// Ensures users can only access their own data
+@GetMapping("/me")
+public ResponseEntity<AppUser> getMyInfo(Authentication auth) {
+    AppUser currentUser = userRepository.findByEmail(auth.getName()).orElseThrow();
+    return ResponseEntity.ok(currentUser);
+}
