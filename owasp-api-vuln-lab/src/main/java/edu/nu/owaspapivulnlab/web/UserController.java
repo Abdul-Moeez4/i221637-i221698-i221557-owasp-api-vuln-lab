@@ -60,3 +60,10 @@ public ResponseEntity<AppUser> getMyInfo(Authentication auth) {
     AppUser currentUser = userRepository.findByEmail(auth.getName()).orElseThrow();
     return ResponseEntity.ok(currentUser);
 }
+
+// DTO for incoming user registration (excludes sensitive fields)
+class AppUserRequestDTO {
+    public String username;
+    public String email;
+    public String password;
+}
